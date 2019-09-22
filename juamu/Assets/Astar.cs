@@ -18,7 +18,28 @@ public struct Node
         Now = position;
     }
 
-    public void UpdateGoalNodeID(Vector2 goal)  //ゴールノードをアップデート
+    internal static Node CreateBlankNode(Vector2Int position)
+    {
+        return new Node(position, new Vector2Int(-1, -1));
+    }
+
+    internal static Node CreateNode(Vector2Int position, Vector2Int goalPosition)
+    {
+        return new Node(position, goalPosition);
+    }
+
+    internal Node(Vector2Int nodeId, Vector2Int goalNodeId) : this()
+
+    {
+
+        NodeID = nodeId;
+        isLock = false;
+        Remove();
+        MoveCost = 0;
+        UpdateGoalNodeID(goalNodeId);
+
+    }
+    public void UpdateGoalNodeID(Vector2Int goal)  //ゴールノードをアップデート
     {
         HeuristickCost = Mathf.Sqrt(
             Mathf.Pow(Astar.GoalPosition.x - Now.x, 2) +
@@ -78,9 +99,9 @@ public class Astar : MonoBehaviour
         {
             for(int y = 0; y < size; y++)
             {
-                Nodes[x, y] = new Node(new Vector2Int(x, y));
-                OpenNodes[x, y] = new Node(new Vector2Int(x, y));
-                CloseNodes[x, y] = new Node(new Vector2Int(x, y));
+                Nodes[x, y] = Node.CreateBlankNode(new Vector2Int(x, y));
+                OpenNodes[x, y] = Node.CreateBlankNode(new Vector2Int(x, y));
+                CloseNodes[x, y] = Node.CreateBlankNode(new Vector2Int(x, y));
             }
         }
     }
@@ -99,7 +120,7 @@ public class Astar : MonoBehaviour
     //ルート探索。
     public bool SearchRoute(Vector2Int StartNodeID, Vector2Int GoalNodeID,List<Vector2Int> RouteList)
     {
-        ResetNode();
+       // ResetNode();
         if (StartNodeID == GoalNodeID)
         {
             return false;
@@ -117,7 +138,7 @@ public class Astar : MonoBehaviour
         }
 
         // スタート地点の初期化
-        OpenNodes[StartNodeID.x, StartNodeID.y] = Nodes[StartNodeID.x, StartNodeID.y];
+        OpenNodes[StartNodeID.x, StartNodeID.y] = Node.CreateNode(StartNodeID, GoalNodeID);
         OpenNodes[StartNodeID.x, StartNodeID.y].From = StartNodeID;
         OpenNodes[StartNodeID.x, StartNodeID.y].Add();
 
@@ -129,8 +150,10 @@ public class Astar : MonoBehaviour
             // ゴールに辿り着いたら終了
             if (bestScoreNodeId == GoalNodeID)
             {
+                
                 break;
             }
+            
         }
 
         ResolveRoute(StartNodeID, GoalNodeID, RouteList);
@@ -220,7 +243,7 @@ public class Astar : MonoBehaviour
         }
         else        //open にも　close でもない場合。
         {
-            OpenNodes[x, y] = Nodes[x, y];
+            OpenNodes[x, y] = new Node(new Vector2Int(x, y), GoalNodeID);
             OpenNodes[x, y].From = Nodes[x, y].From;
             OpenNodes[x, y].UpdateMoveCost(Nodes[x, y].MoveCost);
             OpenNodes[x, y].Add();
@@ -281,6 +304,8 @@ public class Astar : MonoBehaviour
                 }
             }
         }
+
+        Debug.Log(result);
         return result;
     }
 

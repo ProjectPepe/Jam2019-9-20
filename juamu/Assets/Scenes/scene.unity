@@ -463,8 +463,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tileSize: 15
-  _currentNodeId: {x: 1, y: 0}
-  goalNodeId: {x: 0, y: 0}
+  _currentNodeId: {x: 1, y: 1}
+  goalNodeId: {x: 2, y: 3}
   astar: {fileID: 691405070}
 --- !u!1 &691405066
 GameObject:

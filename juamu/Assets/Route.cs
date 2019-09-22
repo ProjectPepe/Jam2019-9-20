@@ -21,11 +21,9 @@ public class Route : MonoBehaviour
     {
         if (RouteManager.Instance.SearchRoute(_currentNodeId, goalNodeId, _routeList))
         {
-            Debug.Log("yes");
+           // Debug.Log("yes");
         }
-        else
-        {
-            Debug.Log("no");
-        }
+
+        _currentNodeId = goalNodeId;
     }
 }
