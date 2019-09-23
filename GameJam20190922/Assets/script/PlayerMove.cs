@@ -19,20 +19,20 @@ public class PlayerMove : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        movex = Input.GetAxis("Horizontal")*3;
-        movey = Input.GetAxis("Vertical")*3;
-        if (AtOnce)
-        {
-            AtOnce = false;
-            
-        }
+        movex = Input.GetAxis("Horizontal") * 3;
+        movey = Input.GetAxis("Vertical") * 3;
+        //if (AtOnce)
+        //{
+        //    AtOnce = false;
+
+        //}
         //movex=-1.0f;
     }
     void FixedUpdate()
     {
-        //rb.velocity = new Vector2(movex, movey);          //移動
-        var TempResult = RouteManager.Instance._astar.GetBestScoreNodeID();
-        this.gameObject.transform.Translate(iPosX + TempResult.x, iPosY + TempResult.y, 0);
+        rb.velocity = new Vector2(movex,movey);          //移動
+        //var TempResult = RouteManager.Instance._astar.GetBestScoreNodeID();
+        //this.gameObject.transform.Translate(iPosX + TempResult.x, iPosY + TempResult.y, 0);
 
     }
 }

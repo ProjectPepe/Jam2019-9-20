@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.Tilemaps;
 public class RouteManager : MonoBehaviour
 {
     // 簡易的なシングルトン
@@ -28,7 +28,7 @@ public class RouteManager : MonoBehaviour
         _instance = null;
     }
 
-    public Astar _astar;
+    private Astar _astar;
 
     public void Initialize(int tileSize)
     {
@@ -37,13 +37,13 @@ public class RouteManager : MonoBehaviour
         Debug.Log("aaa");
     }
 
-    //public void SetLock(Vector2Int lockNodeId, bool isLock)
-    //{
-    //    _astar.SetLock(lockNodeId, isLock);
-    //}
-
-    public bool SearchRoute(Vector2Int startNodeId, Vector2Int goalNodeId, List<Vector2Int> result,List<Sprite> spList)
+    public void SetLock(Vector2Int lockNodeId, bool isLock)
     {
-        return _astar.SearchRoute(startNodeId, goalNodeId, result,spList);
+        _astar.SetLock(lockNodeId, isLock);
+    }
+
+    public bool SearchRoute(Vector2Int startNodeId, Vector2Int goalNodeId, List<Vector2Int> result,Tilemap tilemap)
+    {
+        return _astar.SearchRoute(startNodeId, goalNodeId, result,tilemap);
     }
 }

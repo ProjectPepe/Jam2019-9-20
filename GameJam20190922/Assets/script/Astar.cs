@@ -1,13 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 //juamu no hou
 public struct Node
 {
     public Vector2Int From;    //親のノード
-    public Vector2Int NodeID;
-    public bool isLock { get; private set; }    
-    public bool isActive { get; private set; }  
+    public Vector2Int NodeID;   //現在地
+    public bool isLock { get; private set; }
+    public bool isActive { get; private set; }
 
     public double MoveCost { get; private set; }    //移動量
     public double HeuristickCost;                    //ゴールまでの予測量
@@ -26,7 +27,8 @@ public struct Node
 
     {
 
-        NodeID = nodeId;
+        NodeID.x = nodeId.x;
+        NodeID.y = nodeId.y;
         isLock = false;
         Remove();
         MoveCost = 0;
@@ -38,7 +40,6 @@ public struct Node
         HeuristickCost = Mathf.Sqrt(
             Mathf.Pow(goal.x - NodeID.x, 2) +
             Mathf.Pow(goal.y - NodeID.y, 2));
-       // Debug.Log("HeuristicCost:"+HeuristickCost);
     }
 
     public double GetScore()            //このスコアをもとに移動する。
@@ -68,6 +69,11 @@ public struct Node
         MoveCost = 0;
         UpdateGoalNodeID(new Vector2Int(-1, -1));
     }
+
+    public void SetIsLock(bool IsLock)
+    {
+        isLock = IsLock;
+    }
 }
 
 public class Astar : MonoBehaviour
@@ -85,9 +91,9 @@ public class Astar : MonoBehaviour
         OpenNodes = new Node[fieldSize, fieldSize];
         CloseNodes = new Node[fieldSize, fieldSize];
 
-        for(int x = 0; x < size; x++)
+        for (int x = 0; x < size; x++)
         {
-            for(int y = 0; y < size; y++)
+            for (int y = 0; y < size; y++)
             {
                 Nodes[x, y] = Node.CreateBlankNode(new Vector2Int(x, y));
                 OpenNodes[x, y] = Node.CreateBlankNode(new Vector2Int(x, y));
@@ -108,9 +114,9 @@ public class Astar : MonoBehaviour
     }
 
     //ルート探索。
-    public bool SearchRoute(Vector2Int StartNodeID, Vector2Int GoalNodeID,List<Vector2Int> RouteList,List<Sprite> spList)
+    public bool SearchRoute(Vector2Int StartNodeID, Vector2Int GoalNodeID, List<Vector2Int> RouteList, Tilemap tilemap)
     {
-       // ResetNode();
+        // ResetNode();
         if (StartNodeID == GoalNodeID)
         {
             return false;
@@ -130,20 +136,19 @@ public class Astar : MonoBehaviour
         // スタート地点の初期化
         OpenNodes[StartNodeID.x, StartNodeID.y] = Node.CreateNode(StartNodeID, GoalNodeID);
         OpenNodes[StartNodeID.x, StartNodeID.y].From = StartNodeID;
-        Debug.Log("StartNodeID:" + StartNodeID);
         OpenNodes[StartNodeID.x, StartNodeID.y].Add();
 
         while (true)
         {
             //Vector2int 型
             var bestScoreNodeId = GetBestScoreNodeID();
-            OpenNode(bestScoreNodeId, GoalNodeID,spList);
+            OpenNode(bestScoreNodeId, GoalNodeID, tilemap);
             // ゴールに辿り着いたら終了
             if (bestScoreNodeId == GoalNodeID)
             {
                 break;
             }
-            
+
         }
         ResolveRoute(StartNodeID, GoalNodeID, RouteList);
         return true;
@@ -163,7 +168,7 @@ public class Astar : MonoBehaviour
     }
 
     //周り、四方向のノードをOpenし、探索
-    void OpenNode(Vector2Int BestNodeID, Vector2Int GoalNodeID,List<Sprite> spList)
+    void OpenNode(Vector2Int BestNodeID, Vector2Int GoalNodeID, Tilemap tilemap)
     {
         for (int dx = -1; dx < 2; dx++)
         {
@@ -172,7 +177,7 @@ public class Astar : MonoBehaviour
                 int cx = BestNodeID.x + dx;
                 int cy = BestNodeID.y + dy;
 
-                if (!(CheckWalk(dx, dy, BestNodeID.x, BestNodeID.y, spList)))
+                if (!(CheckWalk(dx, dy, BestNodeID.x, BestNodeID.y)))
                 {
                     continue;
                 }
@@ -190,14 +195,14 @@ public class Astar : MonoBehaviour
 
         // 展開が終わったノードは closed に追加する
         CloseNodes[BestNodeID.x, BestNodeID.y] = OpenNodes[BestNodeID.x, BestNodeID.y];
-       // Debug.Log(OpenNodes[BestNodeID.x,BestNodeID.y].From);
+        // Debug.Log(OpenNodes[BestNodeID.x,BestNodeID.y].From);
         // closedNodesに追加
         CloseNodes[BestNodeID.x, BestNodeID.y].Add();
         // openNodesから削除
         OpenNodes[BestNodeID.x, BestNodeID.y].Remove();
     }
 
-    bool CheckWalk(int dx, int dy, int x, int y,List<Sprite> spList)
+    bool CheckWalk(int dx, int dy, int x, int y)
     {
         if (dx == 0 && dy == 0) //その場にいる
         {
@@ -219,18 +224,17 @@ public class Astar : MonoBehaviour
     {
         if (OpenNodes[x, y].isActive)
         {
-           // Debug.Log("Cost:" + OpenNodes[x, y].GetScore() + " / " + Nodes[x, y].GetScore());
+            // Debug.Log("Cost:" + OpenNodes[x, y].GetScore() + " / " + Nodes[x, y].GetScore());
             if (OpenNodes[x, y].GetScore() > Nodes[x, y].GetScore())
             {
                 //ノードを更新
                 OpenNodes[x, y].UpdateMoveCost(Nodes[x, y].MoveCost);
                 OpenNodes[x, y].From = Nodes[x, y].From;
-                Debug.Log("0.From:" + Nodes[x, y].From);
-
-
             }
+
+            return;
         }
-        else if (CloseNodes[x, y].isActive)
+        if (CloseNodes[x, y].isActive)
         {
             if (CloseNodes[x, y].GetScore() > Nodes[x, y].GetScore())
             {
@@ -238,17 +242,14 @@ public class Astar : MonoBehaviour
                 OpenNodes[x, y].Add();
                 OpenNodes[x, y].UpdateMoveCost(Nodes[x, y].MoveCost);
                 OpenNodes[x, y].From = Nodes[x, y].From;
-                Debug.Log("1.From:" + Nodes[x, y].From);
-            } 
+            }
+            return;
         }
-        else        //open にも　close でもない場合。
-        {
-            OpenNodes[x, y] = new Node(new Vector2Int(x, y), GoalNodeID);
-            OpenNodes[x, y].From = Nodes[x, y].From;
-            OpenNodes[x, y].UpdateMoveCost(Nodes[x, y].MoveCost);
-            OpenNodes[x, y].Add();
-            Debug.Log("2.From:" + Nodes[x, y].From);
-        }
+        //open / close 存在しない
+        OpenNodes[x, y] = new Node(new Vector2Int(x, y), GoalNodeID);
+        OpenNodes[x, y].From = Nodes[x, y].From;
+        OpenNodes[x, y].UpdateMoveCost(Nodes[x, y].MoveCost);
+        OpenNodes[x, y].Add();
     }
 
     void ResolveRoute(Vector2Int StartNodeID, Vector2Int GoalNodeID, List<Vector2Int> Result)
@@ -263,10 +264,10 @@ public class Astar : MonoBehaviour
         }
         var node = CloseNodes[GoalNodeID.x, GoalNodeID.y];
         Result.Add(GoalNodeID);
-      
+
         int TryCount = 1000;
         bool isSuccess = false;
-        for(int Count = 0; Count < TryCount; Count++)
+        for (int Count = 0; Count < TryCount; Count++)
         {
             var BeforeNode = Result[0];
             if (BeforeNode == node.From)
@@ -277,17 +278,16 @@ public class Astar : MonoBehaviour
 
             if (node.From == StartNodeID)
             {
-                Debug.Log("true");
                 isSuccess = true;
                 break;
             }
             else
             {
-                Result.Insert(0,node.From);
+                Result.Insert(0, node.From);
             }
 
             node = CloseNodes[node.From.x, node.From.y];
-            
+
         }
 
         if (isSuccess == false)
@@ -311,7 +311,7 @@ public class Astar : MonoBehaviour
             {
                 if (OpenNodes[x, y].isActive == false)
                 {
-                  //  Debug.Log("isActive:false");
+                    //  Debug.Log("isActive:false");
                     continue;
                 }
                 if (min > OpenNodes[x, y].GetScore())
@@ -320,7 +320,7 @@ public class Astar : MonoBehaviour
                     // 優秀なコストの更新(値が低いほど優秀)
                     min = OpenNodes[x, y].GetScore();
                     result = OpenNodes[x, y].NodeID;
-                  //  Debug.Log("result"+result);
+                    //  Debug.Log("result"+result);
                 }
             }
         }
@@ -329,11 +329,7 @@ public class Astar : MonoBehaviour
     }
 
     public void SetLock(Vector2Int lockNodeId, bool isLock)
-
     {
-
-       // Nodes[lockNodeId.x, lockNodeId.y].SetIsLock(isLock);
-
+        Nodes[lockNodeId.x, lockNodeId.y].SetIsLock(isLock);
     }
-
 }

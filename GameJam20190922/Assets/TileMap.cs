@@ -31,7 +31,7 @@ public class TileMap : MonoBehaviour
         //    for (int y = 0; y < bound.size.y; y++)
         //    {
         //        TileBase tile = allTiles[x + y * bound.size.x];
-               
+
         //        var position = new Vector3Int(x, y, 0);
         //        Debug.Log("(" + "x:" + x + "y:" + y + ")" + tilemap.GetTile(position));
         //        //else
@@ -58,7 +58,7 @@ public class TileMap : MonoBehaviour
             for (int x = bound.min.x; x < bound.max.x; ++x)
             {
                 var tile = tilemap.GetTile<Tile>(new Vector3Int(x, y, 0));
-                
+
                 if (tile == null)
                 {
                     builder.Append("_");
@@ -66,7 +66,7 @@ public class TileMap : MonoBehaviour
                 else
                 {
                     var position = new Vector3Int(x, y, 0);
-                    Debug.Log("(" + "x:" + x + "y:" + y + ")" + tilemap.GetTile(position));
+                    Debug.Log("(" + "x:" + (x + 31) + "y:" + (y + 1) + ")" + tilemap.GetTile(position));
 
                     var index = spriteList.IndexOf(tile.sprite);
                     builder.Append(index);
