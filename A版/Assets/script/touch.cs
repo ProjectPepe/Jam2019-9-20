@@ -8,7 +8,7 @@ public class touch : MonoBehaviour
     Mouse_Operation Mouse;
 
     private Vector3 MousePos;
-    public Vector3 Pos;                 //入力は左上の座標にしてね！！
+    public Vector3 Pos;                 //入力は真ん中の座標にしてね！！
 
     public GameObject Cube;
     public bool Tansu = false;
@@ -26,7 +26,7 @@ public class touch : MonoBehaviour
         if (Mouse.MouseLeft()&&Tansu==false)
         {
             MousePos = Mouse.MousePosition();
-            if (MousePos.x >= Pos.x  && MousePos.x <= Pos.x + 1 && MousePos.y >= Pos.y - 1 && MousePos.y <= Pos.y )
+            if (MousePos.x >= Pos.x - 0.5  && MousePos.x <= Pos.x + 1 && MousePos.y >= Pos.y - 1 && MousePos.y <= Pos.y + 0.5)
             {
                 Cube.SetActive(true);
                 Tansu = true;
@@ -38,7 +38,7 @@ public class touch : MonoBehaviour
         if (Mouse.MouseLeft() && Tansu == false)
         {
             MousePos = Mouse.MousePosition();
-            if (MousePos.x >= Pos.x && MousePos.x <= Pos.x + 1 && MousePos.y >= Pos.y - 1 && MousePos.y <= Pos.y)
+            if (MousePos.x >= Pos.x - 0.5 && MousePos.x <= Pos.x + 1 && MousePos.y >= Pos.y - 1 && MousePos.y <= Pos.y + 0.5)
             {
                 Cube.SetActive(true);
                 Tansu = true;

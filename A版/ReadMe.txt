@@ -21,3 +21,4 @@ Goal Node Id は　キャラクターが逃げる場所の値です。
 壁判定として得たいときは[Wall Tile Map]で [Tile Map]を色付けしてください。
 
 [Floor Tile Map] はその名の通り歩けるマップチップを設定してください。
+
