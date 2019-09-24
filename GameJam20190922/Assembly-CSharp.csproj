@@ -57,13 +57,17 @@
   <ItemGroup>
      <Compile Include="Assets\lesson1.cs" />
      <Compile Include="Assets\Scenes\lessenst.cs" />
+     <Compile Include="Assets\script\Animator.cs" />
      <Compile Include="Assets\script\Astar.cs" />
      <Compile Include="Assets\script\GetScreenPoint.cs" />
+     <Compile Include="Assets\script\Mouse_Operation.cs" />
      <Compile Include="Assets\script\PlayerMove.cs" />
      <Compile Include="Assets\script\Route.cs" />
      <Compile Include="Assets\script\RouteManager.cs" />
      <Compile Include="Assets\script\StableAspect.cs" />
+     <Compile Include="Assets\script\test.cs" />
      <Compile Include="Assets\script\TileSwitch.cs" />
+     <Compile Include="Assets\script\touch.cs" />
      <Compile Include="Assets\TileMap.cs" />
  <Reference Include="Unity.Timeline.Editor">
  <HintPath>C:/Users/kouhei/Desktop/GameJam20190922/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>

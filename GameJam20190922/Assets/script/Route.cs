@@ -8,9 +8,12 @@ public class Route : MonoBehaviour
 {
     public float walkSpeed = 0.6f;
     private GameObject player;
+    private GameObject Tansu;
     public int tileSize = 15;
     public Vector2Int _currentNodeId;
     public Vector2Int goalNodeId;
+    bool IsStopCoroutine = true;
+    touch Touch;
     Tilemap tilemap;
     List<Vector2Int> _routeList = new List<Vector2Int>();
     List<Sprite> spList = new List<Sprite>();
@@ -22,8 +25,10 @@ public class Route : MonoBehaviour
         player = GameObject.Find("Char");
         tilemap = GetComponent<Tilemap>();
         OutputSpriteType(tilemap, spList);
+        Tansu = GameObject.Find("CubeManager");
+        Touch = Tansu.GetComponent<touch>();
 
-        InitSetLock(tilemap);
+        
     }
 
     private void SetLock(Vector2Int nodeId, bool isLock)
@@ -35,14 +40,32 @@ public class Route : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (RouteManager.Instance.SearchRoute(_currentNodeId, goalNodeId, _routeList, tilemap))
+        if (Touch.Tansu == true)
         {
-            Debug.Log("yes");
-            if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
-            _moveCoroutine = StartCoroutine(Move());
+            Debug.Log("SetLock");
+            SetLock(new Vector2Int((26), (15)), true);
+            SetLock(new Vector2Int((27), (15)), true);
         }
+        if (Input.GetKeyDown(KeyCode.Return) && IsStopCoroutine == true)
+        {
+            InitSetLock(tilemap);
+            if (RouteManager.Instance.SearchRoute(_currentNodeId, goalNodeId, _routeList, tilemap))
+            {
+ 
+            }
+            IsStopCoroutine = false;
+            _moveCoroutine = StartCoroutine(Move());
+            _currentNodeId = goalNodeId;
 
-        _currentNodeId = goalNodeId;
+        }
+        else if (Input.GetMouseButtonDown(1) && IsStopCoroutine == false)
+        {
+            _routeList.Clear();
+            _routeList = new List<Vector2Int>();
+            _currentNodeId = new Vector2Int((int)player.transform.position.x,(int)player.transform.position.y);
+            IsStopCoroutine = true;
+            StopCoroutine(_moveCoroutine);
+        }
     }
 
     public static void OutputSpriteType(Tilemap tilemap, List<Sprite> spriteList)
@@ -61,10 +84,7 @@ public class Route : MonoBehaviour
                 }
             }
         }
-        Debug.Log("Max.X:" + bound.max.x);
-        Debug.Log("Min.X:" + bound.min.x);
-        Debug.Log("Min.Y:" + bound.min.y);
-        Debug.Log("Max.Y:" + bound.max.y);
+
     }
     IEnumerator Move()
     {
@@ -72,17 +92,17 @@ public class Route : MonoBehaviour
 
         for (int i = 0; i < _routeList.Count; i++)
         {
+           
             var nodeId = _routeList[i];         //←これが進みかたを格納したリスト　（俺のもこの書き方はできる）
             var goal = new Vector3(nodeId.x, nodeId.y, 0);//たぶん3Dやから   xyz座標に置換
             Transform transform = player.gameObject.transform;
             Vector3 pos = transform.position;
-            //unityちゃんが動く原理
             pos.x = goal.x;
             pos.y = goal.y;
             pos.z = goal.z;
             transform.localPosition = pos;
 
-            //  Debug.Log(player.gameObject.transform.position);
+            Debug.Log(player.gameObject.transform.position);
             yield return wait;
         }
     }
@@ -104,13 +124,14 @@ public class Route : MonoBehaviour
                 else
                 {
                     var position = new Vector3Int(x, y, 0);
-                    Debug.Log("(" + "x:" + (x + 31) + "y:" + (y + 15) + ")" + tilemap.GetTile(position));
                     SetLock(new Vector2Int((x + 31), (y + 15)), true);
-                   // var index = spriteList.IndexOf(tile.sprite);
-                   // builder.Append(index);
+                    // var index = spriteList.IndexOf(tile.sprite);
+                    // builder.Append(index);
                 }
             }
             builder.Append("\n");
         }
+
+        
     }
 }
