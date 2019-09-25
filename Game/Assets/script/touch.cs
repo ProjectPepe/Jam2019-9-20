@@ -8,10 +8,12 @@ public class touch : MonoBehaviour
     Mouse_Operation Mouse;
 
     private Vector2 MousePos;
-    public Vector3 Pos;                 //入力は左上の座標にしてね！！
-    public Vector3 ClockPos;
-    public Vector3 TansuTate;                 //入力は左上の座標にしてね！！
+   
+    private Vector3 TansuTate;                 //入力は左上の座標にしてね！！
     public GameObject Cube;
+    private Vector3 TansuPos;
+    private Vector3 TansuTatePos;
+    private Vector3 ClockPos;
     public int TansuRange;
     public int ClockRangeX;
     public int ClockRangeY;
@@ -27,8 +29,10 @@ public class touch : MonoBehaviour
         GameManeger = GameObject.Find("GameManeger");
         Mouse = GameManeger.GetComponent<Mouse_Operation>();
         playertouch = GameObject.Find("Char");
+        TansuPos = GameObject.Find("TansuSet").transform.position;
+        TansuTatePos = GameObject.Find("TansuTateSet").transform.position;
+        ClockPos = GameObject.Find("ClockPos").transform.position;
 
-       
     }
 
     // Update is called once per frame
@@ -38,7 +42,7 @@ public class touch : MonoBehaviour
         if (Mouse.MouseLeft() && Tansu == false)
         {
             MousePos = Mouse.MousePosition();
-            if (MousePos.x >= Pos.x && MousePos.x <= Pos.x + 1 && MousePos.y >= Pos.y - 1 && MousePos.y <= Pos.y)
+            if (MousePos.x >= TansuPos.x && MousePos.x <= TansuPos.x + 1 && MousePos.y >= TansuPos.y - 1 && MousePos.y <=  TansuPos.y)
             {
                 if (MousePos.y - playertouch.gameObject.transform.position.y < TansuRange && MousePos.y - playertouch.gameObject.transform.position.y > -(TansuRange) &&
                     MousePos.x - playertouch.gameObject.transform.position.x > -(TansuRange) && MousePos.x - playertouch.gameObject.transform.position.x < TansuRange)
@@ -53,7 +57,7 @@ public class touch : MonoBehaviour
         if (Mouse.MouseLeft() && Tansu2 == false)
         {
             MousePos = Mouse.MousePosition();
-            if (MousePos.x >= TansuTate.x && MousePos.x <= TansuTate.x + 1 && MousePos.y >= TansuTate.y - 1 && MousePos.y <= TansuTate.y)
+            if (MousePos.x >= TansuTatePos.x && MousePos.x <= TansuTatePos.x + 1 && MousePos.y >= TansuTatePos.y - 1 && MousePos.y <= TansuTatePos.y)
             {
                 if (MousePos.y - playertouch.gameObject.transform.position.y < TansuRange && MousePos.y - playertouch.gameObject.transform.position.y > -(TansuRange) &&
                     MousePos.x - playertouch.gameObject.transform.position.x > -(TansuRange) && MousePos.x - playertouch.gameObject.transform.position.x < TansuRange)
@@ -76,6 +80,7 @@ public class touch : MonoBehaviour
                 {
                     Clock = true;
                 }
+                
             }
         }
 
@@ -87,7 +92,7 @@ public class touch : MonoBehaviour
         if (Mouse.MouseLeft() && Tansu == false)
         {
             MousePos = Mouse.MousePosition();
-            if (MousePos.x >= Pos.x && MousePos.x <= Pos.x + 1 && MousePos.y >= Pos.y - 1 && MousePos.y <= Pos.y)
+            if (MousePos.x >= TansuTatePos.x && MousePos.x <= TansuTatePos.x + 1 && MousePos.y >= TansuTatePos.y - 1 && MousePos.y <= TansuTatePos.y)
             {
                 if (MousePos.y - playertouch.gameObject.transform.position.y < TansuRange && MousePos.y - playertouch.gameObject.transform.position.y > -(TansuRange) &&
                     MousePos.x - playertouch.gameObject.transform.position.x > -(TansuRange) && MousePos.x - playertouch.gameObject.transform.position.x < TansuRange)
