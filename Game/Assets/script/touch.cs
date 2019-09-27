@@ -7,6 +7,10 @@ public class touch : MonoBehaviour
     GameObject GameManeger;
     Mouse_Operation Mouse;
 
+
+    public bool clock_L = false;
+    public bool piano = false;
+
     private Vector2 MousePos;
    
     private Vector3 TansuTate;                 //入力は左上の座標にしてね！！
@@ -26,6 +30,7 @@ public class touch : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        anim = GetComponent<Animator>();
         GameManeger = GameObject.Find("GameManeger");
         Mouse = GameManeger.GetComponent<Mouse_Operation>();
         playertouch = GameObject.Find("Char");
@@ -49,6 +54,7 @@ public class touch : MonoBehaviour
                 {
                     Cube.SetActive(true);
                     Tansu = true;
+                    anim.Play("book");
                 }
             }
         }
@@ -64,11 +70,12 @@ public class touch : MonoBehaviour
                 {
                     Cube.SetActive(true);
                     Tansu2 = true;
+                    anim.Play("book_anim");
                 }
             }
         }
 
-        //時計をタッチしたとき
+        //時計前をタッチしたとき
         if (Mouse.MouseLeft() && Clock == false)
         {
             MousePos = Mouse.MousePosition();
@@ -79,8 +86,42 @@ public class touch : MonoBehaviour
                     MousePos.x - playertouch.gameObject.transform.position.x > -(ClockRangeX) && MousePos.x - playertouch.gameObject.transform.position.x < ClockRangeX)
                 {
                     Clock = true;
+                    anim.Play("Clock");
                 }
                 
+            }
+        }
+
+        //時計右をタッチしたとき
+        if (Mouse.MouseLeft() && clock_L == false)
+        {
+            MousePos = Mouse.MousePosition();
+            if (MousePos.x >= ClockPos.x && MousePos.x <= ClockPos.x + 1 &&
+                MousePos.y >= ClockPos.y - 1 && MousePos.y <= ClockPos.y)
+            {
+                if (MousePos.y - playertouch.gameObject.transform.position.y < ClockRangeY && MousePos.y - playertouch.gameObject.transform.position.y > -(ClockRangeY) &&
+                    MousePos.x - playertouch.gameObject.transform.position.x > -(ClockRangeX) && MousePos.x - playertouch.gameObject.transform.position.x < ClockRangeX)
+                {
+                    Clock_L = true;
+                    anim.Play("Clock_L");
+                }
+
+            }
+        }
+
+        if (Mouse.MouseLeft() &&  piano == false)
+        {
+            MousePos = Mouse.MousePosition();
+            if (MousePos.x >= ClockPos.x && MousePos.x <= ClockPos.x + 1 &&
+                MousePos.y >= ClockPos.y - 1 && MousePos.y <= ClockPos.y)
+            {
+                if (MousePos.y - playertouch.gameObject.transform.position.y < ClockRangeY && MousePos.y - playertouch.gameObject.transform.position.y > -(ClockRangeY) &&
+                    MousePos.x - playertouch.gameObject.transform.position.x > -(ClockRangeX) && MousePos.x - playertouch.gameObject.transform.position.x < ClockRangeX)
+                {
+                    piano = true;
+                    anim.Play("piano");
+                }
+
             }
         }
 

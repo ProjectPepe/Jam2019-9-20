@@ -23,11 +23,15 @@ public class Route : MonoBehaviour
     public Vector2Int goalNodeId;
     bool IsStopCoroutine = true;
 
+    private int StopTimeCount = 0;
 
     /*一度だけ実行用変数*/
     bool AtOne = false;
     bool AtOneinClock = false;
     bool AtOne2 = false;
+
+    private Vector2Int TansBlock;
+    private Vector2Int TansTateBlock;
 
     touch Touch;
     Tilemap tilemap;
@@ -49,6 +53,8 @@ public class Route : MonoBehaviour
         Tansu = GameObject.Find("NewWallManager");
         deathTileMap = GameObject.Find("DeathTileMap");
         Touch = Tansu.GetComponent<touch>();
+        anim = player.GetComponent<Animator>();
+
 
 
         ///////////////////////////////////////
@@ -102,6 +108,15 @@ public class Route : MonoBehaviour
             _startNodeId = goalNodeId;
         }
 
+        if (Time.timeScale == 0)
+        {
+            Debug.Log("A");
+            if(StopTimeCount >= 120)
+            {
+                Time.timeScale = 1;
+            }
+            StopTimeCount++;
+        }
     }
 
     IEnumerator Move()
@@ -114,6 +129,26 @@ public class Route : MonoBehaviour
             var nodeId = _routeList[i];         //←これが進みかたを格納したリスト　（俺のもこの書き方はできる）
             Transform transform = player.gameObject.transform;
             Vector3 pos = transform.position;
+            if (pos.y > nodeId.y)
+            {
+                anim.Play("F");
+
+            }
+            else if (pos.y < nodeId.y)
+            {
+                anim.Play("B");
+
+            }
+            else if (pos.x > nodeId.x)
+            {
+                anim.Play("R");
+
+            }
+            else if (pos.x < nodeId.x)
+            {
+                anim.Play("L");
+
+            }
             pos.x = nodeId.x;
             pos.y = nodeId.y;
             pos.z = 0;
@@ -192,13 +227,19 @@ public class Route : MonoBehaviour
             _routeList.Clear();
             _routeList = new List<Vector2Int>();
             _startNodeId = new Vector2Int((int)player.transform.position.x, (int)player.transform.position.y);
+            if (Touch.TansuTouch())
+            {
 
+                SetLock(new Vector2Int((int)TansTateBlock.x, (int)TansTateBlock.y + 1), true);
+                SetLock(new Vector2Int((int)MousePos.x, (int)MousePos.y + 2), true);
+
+            }
             //壁の更新
-            SetLock(new Vector2Int((int)MousePos.x, (int)MousePos.y), true);
-            SetLock(new Vector2Int((int)MousePos.x + 1, (int)MousePos.y), true);
-            SetLock(new Vector2Int(((int)MousePos.x + 2), ((int)MousePos.y)), true);
-            SetLock(new Vector2Int(((int)MousePos.x + 3), ((int)MousePos.y)), true);
 
+            SetLock(new Vector2Int((int)MousePos.x + 1, (int)MousePos.y), true);
+            SetLock(new Vector2Int((int)MousePos.x + 2, (int)MousePos.y), true);
+
+            TansBlock = new Vector2Int((int)MousePos.x, (int)MousePos.y);
             //キャラクターを一瞬止める
             StopCoroutine(_moveCoroutine);
 
@@ -218,31 +259,35 @@ public class Route : MonoBehaviour
             _routeList = new List<Vector2Int>();
             _startNodeId = new Vector2Int((int)player.transform.position.x, (int)player.transform.position.y);
 
+            if (Touch.Tansu == true)
+            {
+
+                SetLock(new Vector2Int((int)TansBlock.x + 1, (int)TansBlock.y), true);
+                SetLock(new Vector2Int((int)TansBlock.x + 2, (int)TansBlock.y), true);
+
+            }
             //壁の更新
-            SetLock(new Vector2Int((int)MousePos.x, (int)MousePos.y), true);
+
             SetLock(new Vector2Int((int)MousePos.x, (int)MousePos.y + 1), true);
-            SetLock(new Vector2Int(((int)MousePos.x), ((int)MousePos.y + 2)), true);
-            SetLock(new Vector2Int(((int)MousePos.x), ((int)MousePos.y + 3)), true);
+            SetLock(new Vector2Int((int)MousePos.x, (int)MousePos.y), true);
+            SetLock(new Vector2Int((int)MousePos.x, (int)MousePos.y + 2), true);
+
+            TansTateBlock = new Vector2Int((int)MousePos.x, (int)MousePos.y);
 
             //キャラクターを一瞬止める
             StopCoroutine(_moveCoroutine);
 
             Invoke("RestartRoutine", stopTime);
-            walkSpeed -= 0.15f;
+            
         }
 
         if (Touch.ClockTouch() && !(AtOneinClock))
         {
+            
             AtOneinClock = true;
-            //最短経路リストの更新
-            RouteManager.Instance.Initialize(tileSize);
-            InitSetLock(tilemap);
-            DeathTileMap(Death);
-            _routeList.Clear();
-            _routeList = new List<Vector2Int>();
-            _startNodeId = new Vector2Int((int)player.transform.position.x, (int)player.transform.position.y);
-            StopCoroutine(_moveCoroutine);
-            Invoke("RestartRoutine", ClockstopTime);
+           
+            Time.timeScale = 0;
+           
         }
 
     }
